@@ -1,0 +1,7 @@
+# No third-party dependencies — pure Python standard library
+# Python 3.10+ required
+#
+# Optional: install for extended ML capabilities
+# scikit-learn>=1.3.0   # Isolation Forest anomaly detection
+# pandas>=2.0.0         # Large dataset handling
+# matplotlib>=3.7.0     # Visualization / risk charts
