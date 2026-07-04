@@ -9,6 +9,32 @@ import json
 from pathlib import Path
 
 
+def _to_int(value, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def normalize_event(event: dict) -> dict:
+    """Return a normalized event dict used consistently by the profiler."""
+    status = str(event.get("status", "")).lower()
+    status_code = str(event.get("status_code", ""))
+    if status_code in ("401", "403") and status not in ("failed", "failure"):
+        status = "failed"
+
+    return {
+        "timestamp": str(event.get("timestamp", "")),
+        "user": str(event.get("user") or event.get("ip") or "unknown"),
+        "ip": str(event.get("ip", "")),
+        "status": status,
+        "event_type": str(event.get("event_type", "")),
+        "endpoint": str(event.get("endpoint", "")),
+        "bytes": _to_int(event.get("bytes", 0)),
+        "raw": event.get("raw", str(event)),
+    }
+
+
 # ── SSH / Auth log ──────────────────────────────────────────────
 # e.g. Jan 10 08:12:01 server sshd[1234]: Failed password for admin from 1.2.3.4
 AUTH_PATTERN = re.compile(
@@ -23,7 +49,7 @@ def parse_auth_log(content: str) -> list[dict]:
     for line in content.splitlines():
         m = AUTH_PATTERN.search(line)
         if m:
-            events.append({
+            events.append(normalize_event({
                 "timestamp": m.group("timestamp"),
                 "user": m.group("user"),
                 "ip": m.group("ip"),
@@ -32,7 +58,7 @@ def parse_auth_log(content: str) -> list[dict]:
                 "endpoint": "ssh",
                 "bytes": 0,
                 "raw": line.strip(),
-            })
+            }))
     return events
 
 
@@ -52,7 +78,7 @@ def parse_access_log(content: str) -> list[dict]:
         if m:
             code = int(m.group("status_code"))
             user = m.group("user") if m.group("user") != "-" else m.group("ip")
-            events.append({
+            events.append(normalize_event({
                 "timestamp": m.group("timestamp"),
                 "user": user,
                 "ip": m.group("ip"),
@@ -61,7 +87,7 @@ def parse_access_log(content: str) -> list[dict]:
                 "endpoint": m.group("endpoint"),
                 "bytes": int(m.group("bytes")) if m.group("bytes") != "-" else 0,
                 "raw": line.strip(),
-            })
+            }))
     return events
 
 
@@ -71,7 +97,7 @@ def parse_csv_log(content: str) -> list[dict]:
     events = []
     reader = csv.DictReader(content.splitlines())
     for row in reader:
-        events.append({
+        events.append(normalize_event({
             "timestamp": row.get("timestamp", ""),
             "user": row.get("user", row.get("ip", "unknown")),
             "ip": row.get("ip", ""),
@@ -80,7 +106,7 @@ def parse_csv_log(content: str) -> list[dict]:
             "endpoint": row.get("endpoint", ""),
             "bytes": row.get("bytes", 0),
             "raw": str(row),
-        })
+        }))
     return events
 
 
@@ -89,8 +115,8 @@ def parse_json_log(content: str) -> list[dict]:
     try:
         data = json.loads(content)
         if isinstance(data, list):
-            return data
-        return [data]
+            return [normalize_event(event) for event in data if isinstance(event, dict)]
+        return [normalize_event(data)]
     except json.JSONDecodeError:
         # Try NDJSON (one JSON object per line)
         events = []
@@ -98,7 +124,9 @@ def parse_json_log(content: str) -> list[dict]:
             line = line.strip()
             if line:
                 try:
-                    events.append(json.loads(line))
+                    parsed = json.loads(line)
+                    if isinstance(parsed, dict):
+                        events.append(normalize_event(parsed))
                 except json.JSONDecodeError:
                     pass
         return events

@@ -54,6 +54,121 @@ METRIC_WEIGHTS = {
 }
 
 
+TECHNIQUE_HINTS = {
+    "failure_rate": {
+        "id": "T1110",
+        "name": "Brute Force",
+        "why": "High authentication failure rate can indicate password guessing or credential stuffing.",
+    },
+    "ip_diversity": {
+        "id": "T1078",
+        "name": "Valid Accounts",
+        "why": "One account or entity appearing from many IPs can indicate account sharing or compromise.",
+    },
+    "ep_diversity": {
+        "id": "T1083",
+        "name": "File and Directory Discovery",
+        "why": "Broad endpoint access can indicate enumeration or discovery activity.",
+    },
+    "avg_hour": {
+        "id": "T1078",
+        "name": "Valid Accounts",
+        "why": "Activity concentrated outside normal business hours can indicate suspicious account use.",
+    },
+    "total_bytes": {
+        "id": "T1041",
+        "name": "Exfiltration Over C2 Channel",
+        "why": "Unusually high data volume can indicate collection or exfiltration behavior.",
+    },
+}
+
+
+def security_signals(profile: BehaviorProfile) -> list[dict]:
+    """Return interpretable security signals that supplement population z-scores."""
+    signals = []
+
+    if profile.failure_rate() >= 0.50 and profile.failed_logins >= 3:
+        signals.append({
+            "name": "high_failure_rate",
+            "weight": 0.20,
+            "metric": "failure_rate",
+            "detail": f"{profile.failed_logins} failed events across {profile.event_count} total events",
+        })
+    if profile.ip_diversity() >= 5:
+        signals.append({
+            "name": "many_source_ips",
+            "weight": 0.15,
+            "metric": "ip_diversity",
+            "detail": f"{profile.ip_diversity()} unique source IPs",
+        })
+    if profile.endpoint_diversity() >= 5:
+        signals.append({
+            "name": "broad_endpoint_access",
+            "weight": 0.05,
+            "metric": "ep_diversity",
+            "detail": f"{profile.endpoint_diversity()} unique endpoints",
+        })
+    if profile.total_bytes() >= 5_000_000:
+        signals.append({
+            "name": "large_data_volume",
+            "weight": 0.10,
+            "metric": "total_bytes",
+            "detail": f"{profile.total_bytes():,} bytes transferred",
+        })
+    if profile.event_count >= 10:
+        signals.append({
+            "name": "high_event_volume",
+            "weight": 0.05,
+            "metric": "event_count",
+            "detail": f"{profile.event_count} events",
+        })
+    if profile.active_hours and (profile.avg_hour() < 6 or profile.avg_hour() > 22):
+        signals.append({
+            "name": "off_hours_activity",
+            "weight": 0.10,
+            "metric": "avg_hour",
+            "detail": f"average activity hour {profile.avg_hour():.1f}",
+        })
+
+    return signals
+
+
+def technique_hints(z_scores: dict, signals: list[dict]) -> list[dict]:
+    metrics = [signal["metric"] for signal in signals]
+    metrics.extend(metric for metric, z in z_scores.items() if z >= 2.5)
+
+    hints = []
+    seen = set()
+    for metric in metrics:
+        hint = TECHNIQUE_HINTS.get(metric)
+        if not hint:
+            continue
+        key = (hint["id"], hint["name"])
+        if key in seen:
+            continue
+        seen.add(key)
+        hints.append(hint)
+    return hints
+
+
+def recommended_actions(signals: list[dict]) -> list[str]:
+    names = {signal["name"] for signal in signals}
+    actions = []
+    if "high_failure_rate" in names:
+        actions.append("Review authentication logs for password spraying, credential stuffing, and account lockout events.")
+    if "many_source_ips" in names:
+        actions.append("Check impossible-travel patterns and validate whether source IPs match expected user locations.")
+    if "broad_endpoint_access" in names:
+        actions.append("Review accessed endpoints for enumeration, discovery, or privilege misuse.")
+    if "large_data_volume" in names:
+        actions.append("Inspect transferred data volume and confirm whether the activity matches a legitimate business workflow.")
+    if "off_hours_activity" in names:
+        actions.append("Validate whether off-hours activity was expected for this user or service account.")
+    if not actions:
+        actions.append("Monitor this entity and compare against a larger historical baseline before escalating.")
+    return actions
+
+
 def score_entity(
     profile: BehaviorProfile,
     population_stats: dict,
@@ -78,9 +193,11 @@ def score_entity(
 
     # Weighted sum of z-scores
     weighted_sum = sum(z_scores[m] * METRIC_WEIGHTS[m] for m in z_scores)
+    signals = security_signals(profile)
+    signal_boost = sum(signal["weight"] for signal in signals)
 
-    # Normalise to 0-1 probability using sigmoid
-    risk_score = round(sigmoid(weighted_sum - 1.5), 4)
+    # Normalize to 0-1 probability using sigmoid, then apply explicit security signal boosts.
+    risk_score = round(min(1.0, sigmoid(weighted_sum - 1.5) + signal_boost), 4)
 
     return {
         "entity": profile.entity_id,
@@ -92,6 +209,9 @@ def score_entity(
         "unique_endpoints": profile.endpoint_diversity(),
         "total_bytes": profile.total_bytes(),
         "z_scores": z_scores,
+        "signals": signals,
+        "technique_hints": technique_hints(z_scores, signals),
+        "recommended_actions": recommended_actions(signals),
         "top_anomaly": max(z_scores, key=lambda k: z_scores[k] * METRIC_WEIGHTS[k]),
     }
 

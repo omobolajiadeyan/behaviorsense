@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BehaviorSense — AI-powered behavioral anomaly detection.
+BehaviorSense — behavioral anomaly detection for security logs.
 Profiles every user and IP from log data, then uses statistical
 deviation analysis to surface the most suspicious entities.
 Author: Omobolaji Adeyan
@@ -49,7 +49,7 @@ def print_banner():
   ██╔══██╗██╔══╝  ██╔══██║██╔══██║╚██╗ ██╔╝██║██║   ██║██╔══██╗╚════██║██╔══╝  ██║╚██╗██║╚════██║██╔══╝
   ██████╔╝███████╗██║  ██║██║  ██║ ╚████╔╝ ██║╚██████╔╝██║  ██║███████║███████╗██║ ╚████║███████║███████╗
   ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═══╝╚══════╝╚══════╝
-{RESET}{GRAY}  AI behavioral anomaly detection | github.com/oadeyan{RESET}
+{RESET}{GRAY}  Behavioral anomaly detection for security logs | github.com/omobolajiadeyan{RESET}
 """)
 
 
@@ -72,6 +72,21 @@ def print_entity_card(result: dict, rank: int, verbose: bool = False):
             bar = "█" * min(int(z), 10)
             flag = f"  {RED}<<{RESET}" if z > 2.5 else ""
             print(f"    {metric:<20}: {z:5.2f}  {GRAY}{bar}{RESET}{flag}")
+
+        if result.get("signals"):
+            print(f"\n  {GRAY}Security signals:{RESET}")
+            for signal in result["signals"]:
+                print(f"    - {signal['name'].replace('_', ' ')}: {signal['detail']}")
+
+        if result.get("technique_hints"):
+            print(f"\n  {GRAY}Technique hints:{RESET}")
+            for technique in result["technique_hints"]:
+                print(f"    - {technique['id']} {technique['name']}: {technique['why']}")
+
+        if result.get("recommended_actions"):
+            print(f"\n  {GRAY}Recommended actions:{RESET}")
+            for action in result["recommended_actions"]:
+                print(f"    - {action}")
 
 
 def print_summary(ranked: list[dict], total_events: int, total_entities: int):
@@ -106,7 +121,7 @@ def collect_log_files(target: str) -> list[str]:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="BehaviorSense — AI behavioral anomaly detection from log data",
+        description="BehaviorSense — behavioral anomaly detection from security log data",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
