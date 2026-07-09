@@ -176,7 +176,7 @@ python detector.py sample_data/ --verbose
 ## Author
 
 **Omobolaji Adeyan** - Cybersecurity Engineer  
-GitHub: https://github.com/omobolajiadeyan
+GitHub: https://github.com/omobolajiadeyan · Website: https://omobolajiadeyan.com
 
 ## License
 
