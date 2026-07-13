@@ -15,6 +15,11 @@ from parser import parse_file
 from profiler import build_profiles
 from scorer import rank_entities
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(errors="replace")
+
 RED    = "\033[91m"
 ORANGE = "\033[38;5;208m"
 YELLOW = "\033[93m"
