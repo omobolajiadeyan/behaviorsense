@@ -15,6 +15,23 @@ Traditional rule-based tools catch known patterns. BehaviorSense focuses on susp
 
 BehaviorSense runs locally and uses only the Python standard library. No log data is sent to external services.
 
+## For External Reviewers
+
+If you are evaluating this project, start here:
+
+- [External Evaluator Guide](docs/EVALUATOR_GUIDE.md) - five-minute review path, expected result, and trust boundaries
+- [Sample Output](docs/SAMPLE_OUTPUT.md) - what the bundled demo should produce
+
+Fastest safe demo:
+
+```bash
+python3 detector.py sample_data/ --verbose
+python3 detector.py sample_data/ --output report.json
+```
+
+The bundled sample intentionally contains one `CRITICAL` entity. The CLI exits
+with code `2` when a critical finding is present; that means detection worked.
+
 ## Features
 
 - Profiles users and IPs across behavioral dimensions
