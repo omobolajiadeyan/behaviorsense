@@ -160,6 +160,21 @@ The exported report includes:
 - `technique_hints`
 - `recommended_actions`
 
+## Browser Report Viewer
+
+BehaviorSense includes a small TypeScript-powered report viewer in `web/`.
+It lets evaluators open the bundled sample report or load their own exported
+`report.json` without installing a dashboard stack.
+
+```bash
+cd web
+python3 -m http.server 8080
+# Open http://127.0.0.1:8080/
+```
+
+The viewer is intentionally static: no backend, no telemetry, and no report
+data leaves the browser.
+
 ## Architecture
 
 ```text
@@ -168,6 +183,7 @@ behaviorsense/
 ├── parser.py            # Log parsers and event normalization
 ├── profiler.py          # Per-entity behavioral profiling
 ├── scorer.py            # Z-score, security-signal, and risk ranking logic
+├── web/                 # TypeScript report viewer for exported JSON
 ├── sample_data/
 │   └── activity.csv     # Synthetic sample data with an anomalous entity
 ├── tests/               # Unit tests for parser, scoring, and CLI behavior

@@ -1,0 +1,34 @@
+{
+  "total_events": 23,
+  "total_entities": 5,
+  "results": [
+    {
+      "entity": "mallory",
+      "risk_score": 1,
+      "risk_level": "CRITICAL",
+      "event_count": 12,
+      "failed_logins": 7,
+      "unique_ips": 8,
+      "unique_endpoints": 5,
+      "total_bytes": 8324480,
+      "signals": [
+        { "name": "high_failure_rate", "detail": "7 failed events across 12 total events" },
+        { "name": "many_source_ips", "detail": "8 unique source IPs" },
+        { "name": "broad_endpoint_access", "detail": "5 unique endpoints" },
+        { "name": "large_data_volume", "detail": "8,324,480 bytes transferred" },
+        { "name": "off_hours_activity", "detail": "average activity hour 2.0" }
+      ],
+      "technique_hints": [
+        { "id": "T1110", "name": "Brute Force", "why": "High authentication failure rate can indicate password guessing or credential stuffing." },
+        { "id": "T1078", "name": "Valid Accounts", "why": "One account or entity appearing from many IPs can indicate account sharing or compromise." },
+        { "id": "T1041", "name": "Exfiltration Over C2 Channel", "why": "Unusually high data volume can indicate collection or exfiltration behavior." }
+      ],
+      "recommended_actions": [
+        "Review authentication logs for password spraying, credential stuffing, and account lockout events.",
+        "Check impossible-travel patterns and validate whether source IPs match expected user locations.",
+        "Inspect transferred data volume and confirm whether the activity matches a legitimate business workflow."
+      ],
+      "top_anomaly": "failure_rate"
+    }
+  ]
+}

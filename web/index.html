@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BehaviorSense Report Viewer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">BehaviorSense</p>
+      <h1>Behavioral Risk Report Viewer</h1>
+      <p class="lede">Review exported BehaviorSense JSON in a clean analyst interface: summary, ranked entities, signals, MITRE technique hints, and recommended next actions.</p>
+    </div>
+    <label class="upload">
+      <span>Load report JSON</span>
+      <input id="report-file" type="file" accept="application/json,.json">
+    </label>
+  </header>
+
+  <main>
+    <section class="summary-grid" aria-label="Report summary">
+      <article><span>Total Events</span><strong id="total-events">-</strong></article>
+      <article><span>Entities</span><strong id="total-entities">-</strong></article>
+      <article><span>Critical</span><strong id="critical-count">-</strong></article>
+      <article><span>Highest Risk</span><strong id="highest-risk">-</strong></article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Ranked Entities</h2>
+          <p>Sorted by risk score with explanation-first details for triage.</p>
+        </div>
+        <button id="load-sample" type="button">Load sample report</button>
+      </div>
+      <div id="entity-list" class="entity-list"></div>
+    </section>
+
+    <section class="notice">
+      <strong>Trust boundary:</strong> BehaviorSense supports triage. It does not replace identity-provider context, endpoint telemetry, SIEM correlation, or human investigation.
+    </section>
+  </main>
+
+  <script src="report-viewer.js"></script>
+</body>
+</html>
