@@ -28,6 +28,17 @@ Important: the sample dataset intentionally contains one `CRITICAL` entity.
 The CLI exits with code `2` when a critical finding is present. That means the
 detector worked; it is not a crash.
 
+Open the optional TypeScript report viewer:
+
+```bash
+cd web
+python3 -m http.server 8080
+# Open http://127.0.0.1:8080/
+```
+
+The viewer loads a bundled sample report by default and can also open an
+exported `report.json` from your local machine.
+
 ## Expected Outcome
 
 The sample report should show:
@@ -72,4 +83,5 @@ identity, endpoint, network, and business context.
 - deterministic security-signal boosts
 - MITRE ATT&CK-style technique hints
 - JSON export for downstream review
+- TypeScript browser viewer for exported JSON
 - tests for parser, scoring, and CLI behavior

@@ -13,7 +13,9 @@ Traditional rule-based tools catch known patterns. BehaviorSense focuses on susp
 - Unusual data transfer volume
 - Entity behavior that is statistically different from peers
 
-BehaviorSense runs locally and uses only the Python standard library. No log data is sent to external services.
+The core detector runs locally and uses only the Python standard library. No log
+data is sent to external services. The optional `web/` report viewer is a static
+TypeScript interface for reviewing exported JSON in a browser.
 
 ## For External Reviewers
 
