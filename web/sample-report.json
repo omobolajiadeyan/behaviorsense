@@ -4,29 +4,183 @@
   "results": [
     {
       "entity": "mallory",
-      "risk_score": 1,
+      "risk_score": 1.0,
       "risk_level": "CRITICAL",
       "event_count": 12,
       "failed_logins": 7,
       "unique_ips": 8,
       "unique_endpoints": 5,
       "total_bytes": 8324480,
+      "z_scores": {
+        "failure_rate": 1.789,
+        "ip_diversity": 1.789,
+        "ep_diversity": 1.643,
+        "avg_hour": 1.697,
+        "total_bytes": 1.788,
+        "event_count": 1.779
+      },
       "signals": [
-        { "name": "high_failure_rate", "detail": "7 failed events across 12 total events" },
-        { "name": "many_source_ips", "detail": "8 unique source IPs" },
-        { "name": "broad_endpoint_access", "detail": "5 unique endpoints" },
-        { "name": "large_data_volume", "detail": "8,324,480 bytes transferred" },
-        { "name": "off_hours_activity", "detail": "average activity hour 2.0" }
+        {
+          "name": "high_failure_rate",
+          "weight": 0.2,
+          "metric": "failure_rate",
+          "detail": "7 failed events across 12 total events"
+        },
+        {
+          "name": "many_source_ips",
+          "weight": 0.15,
+          "metric": "ip_diversity",
+          "detail": "8 unique source IPs"
+        },
+        {
+          "name": "broad_endpoint_access",
+          "weight": 0.05,
+          "metric": "ep_diversity",
+          "detail": "5 unique endpoints"
+        },
+        {
+          "name": "large_data_volume",
+          "weight": 0.1,
+          "metric": "total_bytes",
+          "detail": "8,324,480 bytes transferred"
+        },
+        {
+          "name": "high_event_volume",
+          "weight": 0.05,
+          "metric": "event_count",
+          "detail": "12 events"
+        },
+        {
+          "name": "off_hours_activity",
+          "weight": 0.1,
+          "metric": "avg_hour",
+          "detail": "average activity hour 2.0"
+        }
       ],
       "technique_hints": [
-        { "id": "T1110", "name": "Brute Force", "why": "High authentication failure rate can indicate password guessing or credential stuffing." },
-        { "id": "T1078", "name": "Valid Accounts", "why": "One account or entity appearing from many IPs can indicate account sharing or compromise." },
-        { "id": "T1041", "name": "Exfiltration Over C2 Channel", "why": "Unusually high data volume can indicate collection or exfiltration behavior." }
+        {
+          "id": "T1110",
+          "name": "Brute Force",
+          "why": "High authentication failure rate can indicate password guessing or credential stuffing."
+        },
+        {
+          "id": "T1078",
+          "name": "Valid Accounts",
+          "why": "One account or entity appearing from many IPs can indicate account sharing or compromise."
+        },
+        {
+          "id": "T1083",
+          "name": "File and Directory Discovery",
+          "why": "Broad endpoint access can indicate enumeration or discovery activity."
+        },
+        {
+          "id": "T1041",
+          "name": "Exfiltration Over C2 Channel",
+          "why": "Unusually high data volume can indicate collection or exfiltration behavior."
+        }
       ],
       "recommended_actions": [
         "Review authentication logs for password spraying, credential stuffing, and account lockout events.",
         "Check impossible-travel patterns and validate whether source IPs match expected user locations.",
-        "Inspect transferred data volume and confirm whether the activity matches a legitimate business workflow."
+        "Review accessed endpoints for enumeration, discovery, or privilege misuse.",
+        "Inspect transferred data volume and confirm whether the activity matches a legitimate business workflow.",
+        "Validate whether off-hours activity was expected for this user or service account."
+      ],
+      "top_anomaly": "failure_rate"
+    },
+    {
+      "entity": "dave",
+      "risk_score": 0.2865,
+      "risk_level": "NORMAL",
+      "event_count": 2,
+      "failed_logins": 0,
+      "unique_ips": 1,
+      "unique_endpoints": 2,
+      "total_bytes": 307712,
+      "z_scores": {
+        "failure_rate": 0.447,
+        "ip_diversity": 0.447,
+        "ep_diversity": 1.095,
+        "avg_hour": 0.849,
+        "total_bytes": 0.409,
+        "event_count": 0.625
+      },
+      "signals": [],
+      "technique_hints": [],
+      "recommended_actions": [
+        "Monitor this entity and compare against a larger historical baseline before escalating."
+      ],
+      "top_anomaly": "ep_diversity"
+    },
+    {
+      "entity": "charlie",
+      "risk_score": 0.2533,
+      "risk_level": "NORMAL",
+      "event_count": 3,
+      "failed_logins": 0,
+      "unique_ips": 1,
+      "unique_endpoints": 3,
+      "total_bytes": 103040,
+      "z_scores": {
+        "failure_rate": 0.447,
+        "ip_diversity": 0.447,
+        "ep_diversity": 0.183,
+        "avg_hour": 0.566,
+        "total_bytes": 0.465,
+        "event_count": 0.385
+      },
+      "signals": [],
+      "technique_hints": [],
+      "recommended_actions": [
+        "Monitor this entity and compare against a larger historical baseline before escalating."
+      ],
+      "top_anomaly": "failure_rate"
+    },
+    {
+      "entity": "bob",
+      "risk_score": 0.2487,
+      "risk_level": "NORMAL",
+      "event_count": 3,
+      "failed_logins": 0,
+      "unique_ips": 1,
+      "unique_endpoints": 3,
+      "total_bytes": 3584,
+      "z_scores": {
+        "failure_rate": 0.447,
+        "ip_diversity": 0.447,
+        "ep_diversity": 0.183,
+        "avg_hour": 0.283,
+        "total_bytes": 0.492,
+        "event_count": 0.385
+      },
+      "signals": [],
+      "technique_hints": [],
+      "recommended_actions": [
+        "Monitor this entity and compare against a larger historical baseline before escalating."
+      ],
+      "top_anomaly": "failure_rate"
+    },
+    {
+      "entity": "alice",
+      "risk_score": 0.2416,
+      "risk_level": "NORMAL",
+      "event_count": 3,
+      "failed_logins": 0,
+      "unique_ips": 1,
+      "unique_endpoints": 3,
+      "total_bytes": 256512,
+      "z_scores": {
+        "failure_rate": 0.447,
+        "ip_diversity": 0.447,
+        "ep_diversity": 0.183,
+        "avg_hour": 0.0,
+        "total_bytes": 0.423,
+        "event_count": 0.385
+      },
+      "signals": [],
+      "technique_hints": [],
+      "recommended_actions": [
+        "Monitor this entity and compare against a larger historical baseline before escalating."
       ],
       "top_anomaly": "failure_rate"
     }

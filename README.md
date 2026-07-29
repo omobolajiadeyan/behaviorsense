@@ -22,7 +22,10 @@ TypeScript interface for reviewing exported JSON in a browser.
 If you are evaluating this project, start here:
 
 - [External Evaluator Guide](docs/EVALUATOR_GUIDE.md) - five-minute review path, expected result, and trust boundaries
+- [Project Evidence](docs/PROJECT_EVIDENCE.md) - reproducible demo evidence, viewer path, and boundaries
 - [Sample Output](docs/SAMPLE_OUTPUT.md) - what the bundled demo should produce
+
+![BehaviorSense evidence](docs/assets/behaviorsense-evidence.svg)
 
 Fastest safe demo:
 
@@ -186,6 +189,7 @@ behaviorsense/
 ├── profiler.py          # Per-entity behavioral profiling
 ├── scorer.py            # Z-score, security-signal, and risk ranking logic
 ├── web/                 # TypeScript report viewer for exported JSON
+├── docs/                # Evaluator guide, sample output, and evidence notes
 ├── sample_data/
 │   └── activity.csv     # Synthetic sample data with an anomalous entity
 ├── tests/               # Unit tests for parser, scoring, and CLI behavior
@@ -205,7 +209,7 @@ python detector.py sample_data/ --verbose
 - [ ] Peer-group comparisons by department, role, or service account type
 - [ ] Sigma or detection-rule export for downstream security tooling
 - [ ] Richer MITRE ATT&CK mappings with confidence levels
-- [ ] Optional dashboard or HTML report generated from JSON output
+- [ ] HTML report export from JSON output for email or ticket attachments
 - [ ] Optional Isolation Forest mode behind an explicit extra dependency
 
 ## Author

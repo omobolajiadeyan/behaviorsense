@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">BehaviorSense evidence screenshot</title>
+  <desc id="desc">A professional behavioral risk report showing a critical entity, contributing signals, MITRE hints, and recommended actions.</desc>
+  <rect width="1280" height="760" fill="#eef3f8"/>
+  <rect x="64" y="54" width="1152" height="652" rx="10" fill="#ffffff" stroke="#d7e0ec"/>
+  <text x="104" y="112" fill="#2563eb" font-family="Arial, sans-serif" font-size="17" font-weight="700">BEHAVIORSENSE</text>
+  <text x="104" y="166" fill="#172033" font-family="Arial, sans-serif" font-size="56" font-weight="800">Behavioral Risk Report Viewer</text>
+  <text x="104" y="210" fill="#64748b" font-family="Arial, sans-serif" font-size="22">Synthetic local logs with explainable entity risk, security signals, and analyst next actions.</text>
+  <rect x="970" y="86" width="170" height="42" rx="21" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="1002" y="114" fill="#b42318" font-family="Arial, sans-serif" font-size="16" font-weight="800">1 critical entity</text>
+
+  <g>
+    <rect x="104" y="250" width="238" height="112" rx="8" fill="#f8fafc" stroke="#d7e0ec"/>
+    <text x="128" y="292" fill="#64748b" font-family="Arial, sans-serif" font-size="15" font-weight="700">EVENTS ANALYZED</text>
+    <text x="128" y="338" fill="#172033" font-family="Arial, sans-serif" font-size="42" font-weight="800">23</text>
+    <rect x="370" y="250" width="238" height="112" rx="8" fill="#f8fafc" stroke="#d7e0ec"/>
+    <text x="394" y="292" fill="#64748b" font-family="Arial, sans-serif" font-size="15" font-weight="700">ENTITIES</text>
+    <text x="394" y="338" fill="#172033" font-family="Arial, sans-serif" font-size="42" font-weight="800">5</text>
+    <rect x="636" y="250" width="238" height="112" rx="8" fill="#f8fafc" stroke="#d7e0ec"/>
+    <text x="660" y="292" fill="#64748b" font-family="Arial, sans-serif" font-size="15" font-weight="700">TOP RISK</text>
+    <text x="660" y="338" fill="#172033" font-family="Arial, sans-serif" font-size="42" font-weight="800">100%</text>
+    <rect x="902" y="250" width="238" height="112" rx="8" fill="#f8fafc" stroke="#d7e0ec"/>
+    <text x="926" y="292" fill="#64748b" font-family="Arial, sans-serif" font-size="15" font-weight="700">TOP ENTITY</text>
+    <text x="926" y="338" fill="#172033" font-family="Arial, sans-serif" font-size="36" font-weight="800">mallory</text>
+  </g>
+
+  <rect x="104" y="406" width="1036" height="220" rx="8" fill="#ffffff" stroke="#d7e0ec"/>
+  <text x="136" y="452" fill="#172033" font-family="Arial, sans-serif" font-size="30" font-weight="800">mallory</text>
+  <rect x="1008" y="426" width="94" height="32" rx="16" fill="#b42318"/>
+  <text x="1022" y="448" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="800">CRITICAL</text>
+  <text x="136" y="496" fill="#344154" font-family="Arial, sans-serif" font-size="20">High failure rate, many source IPs, broad endpoint access, large transfer volume, and off-hours activity.</text>
+  <text x="136" y="548" fill="#64748b" font-family="Arial, sans-serif" font-size="16" font-weight="700">Technique hints</text>
+  <text x="136" y="584" fill="#172033" font-family="Arial, sans-serif" font-size="19">T1110 Brute Force  •  T1078 Valid Accounts  •  T1041 Exfiltration Over C2 Channel</text>
+  <rect x="136" y="642" width="372" height="40" rx="20" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="160" y="668" fill="#1d4ed8" font-family="Arial, sans-serif" font-size="16" font-weight="800">JSON export + static browser viewer</text>
+  <rect x="530" y="642" width="310" height="40" rx="20" fill="#ecfdf3" stroke="#bbf7d0"/>
+  <text x="554" y="668" fill="#166534" font-family="Arial, sans-serif" font-size="16" font-weight="800">No external log upload</text>
+</svg>
