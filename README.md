@@ -216,6 +216,18 @@ python detector.py sample_data/ --verbose
 - [ ] HTML report export from JSON output for email or ticket attachments
 - [ ] Optional Isolation Forest mode behind an explicit extra dependency
 
+## Part of the Security Automation Toolkit
+
+BehaviorSense is one piece of a practical security-automation toolkit. The others:
+
+- **[PhishGuard AI](https://github.com/omobolajiadeyan/phishguard-ai)** — explainable offline phishing detection (flagship, on GitHub Marketplace)
+- **[Secrets Scanner](https://github.com/omobolajiadeyan/secrets-scanner)** — exposed-credential detection with redacted SARIF/JSON evidence
+- **[Log Analyzer](https://github.com/omobolajiadeyan/log-analyzer)** — MITRE ATT&CK-mapped log threat detection
+- **[CVE Dashboard](https://github.com/omobolajiadeyan/cve-dashboard)** — live NVD vulnerability intelligence
+- **[VulnGPT](https://github.com/omobolajiadeyan/vulngpt)** — CVE-to-remediation triage assistant
+
+Full portfolio: [github.com/omobolajiadeyan](https://github.com/omobolajiadeyan)
+
 ## Author
 
 **Omobolaji Adeyan** - Cybersecurity Engineer  
