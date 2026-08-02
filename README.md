@@ -1,5 +1,9 @@
 # BehaviorSense
 
+[![Tests](https://github.com/omobolajiadeyan/behaviorsense/actions/workflows/tests.yml/badge.svg)](https://github.com/omobolajiadeyan/behaviorsense/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![Maintainer](https://img.shields.io/badge/Maintainer-Omobolaji_Adeyan-0A66C2?style=flat-square)](https://github.com/omobolajiadeyan)
+
 BehaviorSense is a local behavioral anomaly detector for security logs. It profiles users and IP-backed entities, compares behavior against the population baseline, and adds explicit security-signal boosts for patterns such as high authentication failure rate, many source IPs, broad endpoint access, large transfer volume, and off-hours activity.
 
 It is designed for explainable triage, not black-box verdicts. The output shows the risk score, contributing signals, MITRE ATT&CK-style technique hints, and recommended analyst actions.
