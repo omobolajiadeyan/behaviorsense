@@ -69,7 +69,7 @@ Current security signals:
 | `broad_endpoint_access` | 5 or more unique endpoints |
 | `large_data_volume` | 5 MB or more transferred |
 | `high_event_volume` | 10 or more events |
-| `off_hours_activity` | Average activity before 06:00 or after 22:00 |
+| `off_hours_activity` | Circular average activity hour before 06:00 or after 22:00 (so activity around midnight is averaged across the day boundary) |
 
 This is a triage engine. It can produce false positives and false negatives, especially on small or synthetic datasets.
 
@@ -114,7 +114,7 @@ python detector.py /var/log/nginx/
 Exit codes:
 
 - `0`: completed without critical findings
-- `1`: invalid input or runtime error
+- `1`: invalid, unreadable, empty, or unsupported input, or runtime error (reported on standard output)
 - `2`: at least one `CRITICAL` entity found
 
 ## Example Output

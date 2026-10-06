@@ -9,6 +9,10 @@ import json
 from pathlib import Path
 
 
+class LogFileError(ValueError):
+    """Raised when a log file cannot be read or contains no supported events."""
+
+
 def _to_int(value, default: int = 0) -> int:
     try:
         return int(value)
@@ -112,11 +116,21 @@ def parse_csv_log(content: str) -> list[dict]:
 
 # ── JSON activity log ────────────────────────────────────────────
 def parse_json_log(content: str) -> list[dict]:
+    event_fields = {
+        "timestamp", "user", "ip", "status", "status_code",
+        "event_type", "endpoint", "bytes",
+    }
+
+    def is_event(value):
+        return isinstance(value, dict) and bool(event_fields.intersection(value))
+
     try:
         data = json.loads(content)
         if isinstance(data, list):
-            return [normalize_event(event) for event in data if isinstance(event, dict)]
-        return [normalize_event(data)]
+            return [normalize_event(event) for event in data if is_event(event)]
+        if is_event(data):
+            return [normalize_event(data)]
+        return []
     except json.JSONDecodeError:
         # Try NDJSON (one JSON object per line)
         events = []
@@ -125,35 +139,67 @@ def parse_json_log(content: str) -> list[dict]:
             if line:
                 try:
                     parsed = json.loads(line)
-                    if isinstance(parsed, dict):
+                    if is_event(parsed):
                         events.append(normalize_event(parsed))
                 except json.JSONDecodeError:
                     pass
         return events
 
 
+def _has_activity_csv_header(content: str) -> bool:
+    try:
+        header = next(csv.reader(content.splitlines()), [])
+    except csv.Error:
+        return False
+    fields = {
+        field.strip().lstrip("\ufeff").lower()
+        for field in header
+        if isinstance(field, str)
+    }
+    return "timestamp" in fields and bool(fields.intersection({"user", "ip"}))
+
+
+def _parse_activity_csv(content: str, filepath: str) -> list[dict]:
+    if not _has_activity_csv_header(content):
+        raise LogFileError(f"'{filepath}' is not a supported activity CSV.")
+    try:
+        return parse_csv_log(content)
+    except csv.Error as error:
+        raise LogFileError(f"'{filepath}' contains invalid CSV data: {error}") from error
+
+
 def parse_file(filepath: str) -> list[dict]:
     """Auto-detect format and parse a log file."""
     path = Path(filepath)
     try:
-        content = path.read_text(encoding="utf-8", errors="ignore")
-    except Exception as e:
-        print(f"Warning: Could not read {filepath}: {e}")
-        return []
+        content = path.read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeError) as e:
+        raise LogFileError(f"Could not read '{filepath}': {e}") from e
+
+    if not content.strip():
+        raise LogFileError(f"'{filepath}' is empty.")
 
     suffix = path.suffix.lower()
     name = path.name.lower()
 
     if suffix == ".json":
-        return parse_json_log(content)
-    if suffix == ".csv":
-        return parse_csv_log(content)
-    if "access" in name or "nginx" in name or "apache" in name:
-        return parse_access_log(content)
-    if "auth" in name or "sshd" in name or "secure" in name:
-        return parse_auth_log(content)
+        events = parse_json_log(content)
+    elif suffix == ".csv":
+        events = _parse_activity_csv(content, filepath)
+    elif "access" in name or "nginx" in name or "apache" in name:
+        events = parse_access_log(content)
+    elif "auth" in name or "sshd" in name or "secure" in name:
+        events = parse_auth_log(content)
+    else:
+        if AUTH_PATTERN.search(content):
+            events = parse_auth_log(content)
+        elif ACCESS_PATTERN.search(content):
+            events = parse_access_log(content)
+        elif _has_activity_csv_header(content):
+            events = _parse_activity_csv(content, filepath)
+        else:
+            raise LogFileError(f"'{filepath}' has an unsupported log format.")
 
-    # Try each parser and return the one with most hits
-    parsers = [parse_auth_log, parse_access_log, parse_csv_log]
-    results = [p(content) for p in parsers]
-    return max(results, key=len)
+    if not events:
+        raise LogFileError(f"'{filepath}' contains no supported events.")
+    return events
