@@ -1,8 +1,8 @@
 import unittest
 
 from parser import parse_file
-from profiler import build_profiles
-from scorer import rank_entities, score_entity, compute_population_stats
+from profiler import BehaviorProfile, build_profiles
+from scorer import rank_entities, score_entity, compute_population_stats, security_signals
 
 
 class ScoringTests(unittest.TestCase):
@@ -28,6 +28,15 @@ class ScoringTests(unittest.TestCase):
 
         self.assertEqual(alice["risk_level"], "NORMAL")
         self.assertEqual(alice["signals"], [])
+
+    def test_off_hours_average_wraps_across_midnight(self):
+        profile = BehaviorProfile("night-owl")
+        profile.ingest({"timestamp": "2024-01-10T23:00:00"})
+        profile.ingest({"timestamp": "2024-01-11T01:00:00"})
+
+        self.assertAlmostEqual(profile.avg_hour(), 0.0, delta=1e-12)
+        signals = security_signals(profile)
+        self.assertIn("off_hours_activity", [signal["name"] for signal in signals])
 
 
 if __name__ == "__main__":

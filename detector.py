@@ -11,7 +11,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from parser import parse_file
+from parser import LogFileError, parse_file
 from profiler import build_profiles
 from scorer import rank_entities
 
@@ -152,21 +152,30 @@ Examples:
 
     print_banner()
 
-    log_files = collect_log_files(args.target)
+    try:
+        log_files = collect_log_files(args.target)
+    except OSError as error:
+        print(f"{RED}Error: Could not inspect '{args.target}': {error}{RESET}")
+        sys.exit(1)
+
     if not log_files:
-        print(f"{YELLOW}No log files found in '{args.target}'.{RESET}")
-        sys.exit(0)
+        print(f"{RED}Error: No supported log files found in '{args.target}'.{RESET}")
+        sys.exit(1)
 
     print(f"{CYAN}Loading {len(log_files)} log file(s)...{RESET}")
 
     all_events = []
-    for lf in log_files:
-        events = parse_file(lf)
-        all_events.extend(events)
+    try:
+        for lf in log_files:
+            events = parse_file(lf)
+            all_events.extend(events)
+    except LogFileError as error:
+        print(f"{RED}Error: {error}{RESET}")
+        sys.exit(1)
 
     if not all_events:
-        print(f"{YELLOW}No parseable events found.{RESET}")
-        sys.exit(0)
+        print(f"{RED}Error: No supported events found.{RESET}")
+        sys.exit(1)
 
     print(f"{CYAN}Profiling {len(all_events):,} events...{RESET}")
     profiles = build_profiles(all_events)

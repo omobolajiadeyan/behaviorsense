@@ -77,7 +77,15 @@ class BehaviorProfile:
     def avg_hour(self) -> float:
         if not self.active_hours:
             return 12.0
-        return statistics.mean(self.active_hours)
+        radians = [hour * 2 * math.pi / 24 for hour in self.active_hours]
+        sin_mean = statistics.mean(math.sin(hour) for hour in radians)
+        cos_mean = statistics.mean(math.cos(hour) for hour in radians)
+        if math.isclose(sin_mean, 0.0, abs_tol=1e-12) and math.isclose(
+            cos_mean, 0.0, abs_tol=1e-12
+        ):
+            return statistics.mean(self.active_hours)
+        average = (math.atan2(sin_mean, cos_mean) * 24 / (2 * math.pi)) % 24
+        return 0.0 if math.isclose(average, 24.0, abs_tol=1e-12) else average
 
     def hour_std(self) -> float:
         if len(self.active_hours) < 2:

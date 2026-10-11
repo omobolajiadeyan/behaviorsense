@@ -1,6 +1,9 @@
 import unittest
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
 
-from parser import parse_access_log, parse_csv_log, parse_json_log
+from parser import LogFileError, parse_access_log, parse_csv_log, parse_file, parse_json_log
 
 
 class ParserTests(unittest.TestCase):
@@ -35,6 +38,24 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0]["status"], "failed")
         self.assertEqual(events[0]["bytes"], 64)
+
+    def test_parse_file_rejects_empty_and_unsupported_input(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            empty_file = Path(tmpdir) / "empty.json"
+            empty_file.write_text(" \n")
+            unsupported_file = Path(tmpdir) / "events.log"
+            unsupported_file.write_text("this is not a supported log format")
+            unsupported_json = Path(tmpdir) / "unsupported.json"
+            unsupported_json.write_text('{"unexpected":"data"}')
+
+            for filepath in (empty_file, unsupported_file, unsupported_json):
+                with self.subTest(filepath=filepath), self.assertRaises(LogFileError):
+                    parse_file(str(filepath))
+
+    def test_parse_file_surfaces_read_errors(self):
+        with patch.object(Path, "read_text", side_effect=PermissionError("access denied")):
+            with self.assertRaisesRegex(LogFileError, "Could not read"):
+                parse_file("unreadable.csv")
 
 
 if __name__ == "__main__":
